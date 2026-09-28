@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Titanic Survival Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #10253d;
+      --muted: #5c7186;
+      --paper: #fffdf8;
+      --sea: #087e8b;
+      --deep-sea: #063b5b;
+      --coral: #ef8354;
+      --line: #dce7e6;
+      --success: #247a63;
+      --danger: #b95b4b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      background: #f4efe6;
+    }
+    .page { min-height: 100vh; overflow: hidden; }
+    .hero {
+      min-height: 61vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 7rem clamp(1.25rem, 6vw, 7rem) 8rem;
+      color: white;
+      isolation: isolate;
+      background: linear-gradient(180deg, #050b22 0%, #101b3d 39%, #12395a 61%, #071d35 100%);
+    }
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute;
+      inset: auto -10% 0;
+      height: 33%;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(11, 104, 137, .35), rgba(3, 37, 67, .75));
+      border-radius: 50% 50% 0 0 / 18% 18% 0 0;
+      transform: rotate(-1deg);
+    }
+    .hero::after { bottom: -9%; background: rgba(1, 14, 36, .75); transform: rotate(2deg); }
+    .hero-content { width: min(610px, 100%); position: relative; z-index: 2; }
+    .eyebrow { color: #ffd4ae; font-size: .78rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; }
+    h1, h2 { font-family: 'Playfair Display', Georgia, serif; }
+    h1 { font-size: clamp(2.8rem, 7vw, 6.2rem); line-height: .95; margin: 1rem 0 1.4rem; max-width: 700px; }
+    .hero-copy { max-width: 520px; color: #d6f3f1; font-size: 1.08rem; line-height: 1.65; }
+    .ship-scene { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; background: radial-gradient(ellipse at 73% 23%, rgba(56, 76, 132, .28), transparent 28%), radial-gradient(ellipse at 52% 77%, rgba(14, 122, 153, .2), transparent 40%); }
+    .ship-scene::before { content: ''; position: absolute; inset: 7% 0 30%; opacity: .9; background-image: radial-gradient(circle at 12% 24%, #fff 0 1px, transparent 1.5px), radial-gradient(circle at 31% 18%, #bcd8ff 0 1px, transparent 1.5px), radial-gradient(circle at 45% 31%, #fff 0 1px, transparent 1.5px), radial-gradient(circle at 64% 12%, #fff 0 1px, transparent 1.5px), radial-gradient(circle at 87% 25%, #c8d8ff 0 1px, transparent 1.5px), radial-gradient(circle at 78% 42%, #fff 0 1px, transparent 1.5px); }
+    .ship-scene::after { content: ''; position: absolute; left: -10%; right: -10%; bottom: 0; height: 42%; background: repeating-linear-gradient(174deg, transparent 0 32px, rgba(119, 207, 220, .16) 34px 36px, transparent 38px 68px), linear-gradient(180deg, rgba(5, 48, 78, .15), rgba(1, 15, 35, .92)); border-radius: 50% 50% 0 0 / 10% 10% 0 0; }
+    .moon { position: absolute; right: 16%; top: 13%; width: 112px; height: 112px; background: radial-gradient(circle at 38% 35%, #fff8d9 0 28%, #f2dda8 62%, #cfb77e 100%); border-radius: 50%; box-shadow: 0 0 25px 10px rgba(255,235,177,.2), 0 0 100px 35px rgba(121, 145, 205, .12); }
+    .moon::after { content: ''; position: absolute; left: 25%; top: 105%; width: 55%; height: 200px; background: linear-gradient(180deg, rgba(255,224,153,.3), transparent); filter: blur(12px); transform: perspective(80px) rotateX(45deg); }
+    .ship { position: absolute; right: 16%; bottom: 27%; width: 280px; height: 125px; animation: sinking 9s ease-in-out infinite; transform-origin: 76% 82%; filter: drop-shadow(0 18px 12px rgba(0, 8, 18, .65)); z-index: 2; }
+    .hull { position: absolute; bottom: 0; left: 0; width: 250px; height: 35px; background: linear-gradient(#d8d5c8 0 20%, #8d2930 20% 38%, #101725 38%); border-radius: 4px 4px 48% 24%; transform: skewX(-15deg); border-bottom: 7px solid #060b16; }
+    .hull::before { content: ''; position: absolute; left: 17px; bottom: 10px; width: 208px; height: 2px; background: #d6a866; box-shadow: 0 8px #d6a866; opacity: .75; }
+    .deck { position: absolute; bottom: 35px; left: 15px; width: 218px; height: 8px; background: #b99b70; transform: skewX(-15deg); border-top: 2px solid #e7dfc7; }
+    .cabin { position: absolute; bottom: 43px; left: 58px; width: 125px; height: 32px; background: repeating-linear-gradient(90deg, #d7d4c8 0 14px, #873039 14px 17px); border-top: 7px solid #923339; transform: skewX(-15deg); box-shadow: inset 0 -3px #b99b70; }
+    .cabin::after { content: ''; position: absolute; left: 7px; right: 8px; bottom: 6px; height: 4px; background: repeating-linear-gradient(90deg, #f3ca67 0 4px, transparent 4px 12px); }
+    .chimney { position: absolute; bottom: 74px; width: 18px; height: 34px; background: #9e3036; transform: skewX(-15deg); border-top: 5px solid #d7bc83; }
+    .chimney::after { content: ''; position: absolute; top: -8px; left: -4px; width: 25px; height: 5px; background: #c5aa76; }
+    .chimney.one { left: 72px; } .chimney.two { left: 111px; } .chimney.three { left: 150px; } .chimney.four { left: 188px; opacity: .75; }
+    .mast { position: absolute; bottom: 73px; left: 42px; width: 3px; height: 56px; background: #b6925d; transform: rotate(12deg); }
+    .mast::after { content: ''; position: absolute; left: 1px; top: 5px; width: 36px; height: 2px; background: #b6925d; transform: rotate(-18deg); transform-origin: left; }
+    .smoke { position: absolute; bottom: 112px; left: 77px; width: 30px; height: 18px; border-radius: 50%; background: rgba(179, 203, 210, .22); box-shadow: 17px -11px 0 3px rgba(179,203,210,.15), 36px -20px 0 6px rgba(179,203,210,.09); animation: smoke 4s ease-out infinite; }
+    .wave { position: absolute; bottom: 21%; width: 220%; left: -35%; border-top: 2px solid rgba(143, 224, 227, .35); border-radius: 50%; height: 100px; animation: drift 9s linear infinite; z-index: 3; }
+    .wave.two { bottom: 11%; animation-delay: -3s; opacity: .65; border-top-color: rgba(70, 156, 184, .42); }
+    @keyframes sinking { 0%, 100% { transform: rotate(0deg) translateY(0); } 45% { transform: rotate(6deg) translateY(16px); } 75% { transform: rotate(19deg) translateY(100px); opacity: .78; } }
+    @keyframes smoke { 0% { transform: translate(0, 0) scale(.7); opacity: .55; } 100% { transform: translate(38px, -38px) scale(1.4); opacity: 0; } }
+    @keyframes drift { to { transform: translateX(15%); } }
+
+    .predictor { position: relative; z-index: 3; width: min(1100px, calc(100% - 2rem)); margin: -5.5rem auto 4rem; display: grid; grid-template-columns: minmax(280px, .85fr) minmax(350px, 1.15fr); gap: 2rem; }
+    .panel { background: var(--paper); border: 1px solid rgba(255,255,255,.7); box-shadow: 0 20px 50px rgba(21,46,60,.16); border-radius: 18px; padding: clamp(1.5rem, 4vw, 2.5rem); }
+    .panel h2 { margin: 0 0 .6rem; font-size: 2rem; }
+    .panel-intro { color: var(--muted); line-height: 1.5; margin: 0 0 1.6rem; }
+    .field { margin-bottom: 1.2rem; }
+    label { display: flex; justify-content: space-between; font-size: .88rem; font-weight: 700; margin-bottom: .45rem; }
+    label span { color: var(--muted); font-weight: 400; }
+    input { width: 100%; padding: .9rem 1rem; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); font: inherit; outline: none; transition: border-color .2s, box-shadow .2s; }
+    input:focus { border-color: var(--sea); box-shadow: 0 0 0 3px rgba(8,126,139,.13); }
+    button { width: 100%; padding: 1rem; border: 0; border-radius: 9px; color: white; background: var(--coral); font: 700 1rem 'DM Sans', sans-serif; cursor: pointer; box-shadow: 0 8px 18px rgba(239,131,84,.23); transition: transform .2s, background .2s; }
+    button:hover { transform: translateY(-2px); background: #db6d42; }
+    .result { display: flex; flex-direction: column; justify-content: space-between; min-height: 100%; }
+    .result-top { display: flex; justify-content: space-between; gap: 1rem; align-items: start; }
+    .status { display: inline-flex; padding: .4rem .7rem; border-radius: 50px; background: #e8f3ed; color: var(--success); font-size: .78rem; font-weight: 700; }
+    .status.danger { background: #fae9e5; color: var(--danger); }
+    .meter { margin: 2rem 0 1rem; height: 18px; border-radius: 50px; background: #e7eeeb; overflow: hidden; }
+    .meter-fill { width: 68%; height: 100%; background: linear-gradient(90deg, var(--coral), #f5bd65, var(--sea)); border-radius: inherit; transition: width .7s cubic-bezier(.2,.8,.2,1); }
+    .probability { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; margin-top: 1.6rem; }
+    .probability-card { padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .probability-card:last-child { border-color: #f1d1c5; }
+    .probability-label { color: var(--muted); font-size: .8rem; font-weight: 700; }
+    .big-number { font: 700 clamp(2.3rem, 6vw, 4.2rem)/1.1 'Playfair Display', Georgia, serif; color: var(--sea); margin-top: .35rem; }
+    .probability-card:last-child .big-number { color: var(--coral); }
+    .result-note { color: var(--muted); line-height: 1.55; max-width: 390px; }
+    .legend { color: var(--muted); font-size: .82rem; margin-top: 1.5rem; }
+    footer { text-align: center; color: var(--muted); font-size: .82rem; padding: 0 1rem 2rem; }
+    @media (max-width: 780px) { .hero { min-height: 65vh; padding-top: 5rem; } .ship { right: -15%; bottom: 23%; transform: scale(.72); } .moon { right: 8%; top: 10%; width: 70px; height: 70px; } .predictor { grid-template-columns: 1fr; margin-top: -4rem; } .result { min-height: 420px; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">A small model for a big story</div>
+        <h1>Titanic<br>Survival Predictor</h1>
+        <p class="hero-copy">Explore how passenger class, age, and fare influence a simple logistic regression estimate.</p>
+      </div>
+      <div class="ship-scene" aria-hidden="true">
+        <div class="moon"></div>
+        <div class="ship"><div class="hull"></div><div class="deck"></div><div class="cabin"></div><div class="mast"></div><div class="smoke"></div><div class="chimney one"></div><div class="chimney two"></div><div class="chimney three"></div><div class="chimney four"></div></div>
+        <div class="wave"></div><div class="wave two"></div>
+      </div>
+    </section>
+
+    <section class="predictor" aria-label="Passenger survival prediction">
+      <form class="panel" id="predictionForm">
+        <h2>Passenger details</h2>
+        <p class="panel-intro">Enter three passenger details to generate a probability estimate.</p>
+        <div class="field"><label for="passengerClass">Passenger class <span>1, 2, or 3</span></label><input id="passengerClass" type="number" min="1" max="3" step="1" value="3" required></div>
+        <div class="field"><label for="age">Age <span>years</span></label><input id="age" type="number" min="0" max="100" step="1" value="25" required></div>
+        <div class="field"><label for="fare">Fare <span>British pounds</span></label><input id="fare" type="number" min="0" step="0.01" value="25" required></div>
+        <button type="submit">Predict survival probability</button>
+      </form>
+
+      <article class="panel result" aria-live="polite">
+        <div>
+          <div class="result-top"><div><div class="eyebrow" style="color: var(--sea);">Model reading</div><h2 id="resultTitle">A hopeful crossing</h2></div><div class="status" id="status">Likely survived</div></div>
+          <div class="meter"><div class="meter-fill" id="meterFill"></div></div>
+          <div class="probability"><div class="probability-card"><div class="probability-label">Survival probability</div><div class="big-number" id="survivalProbability">68%</div></div><div class="probability-card"><div class="probability-label">Not survived probability</div><div class="big-number" id="notSurvived">32%</div></div></div>
+          <p class="result-note" id="resultNote">This estimate is based on the passenger profile you entered.</p>
+        </div>
+        <div class="legend">The estimate updates when you submit a new passenger profile.</div>
+      </article>
+    </section>
+    <footer>Educational demo • This browser prediction mirrors the idea of your Python model.</footer>
+  </main>
+  <script>
+    const form = document.getElementById('predictionForm');
+    const survivalProbability = document.getElementById('survivalProbability');
+    const notSurvived = document.getElementById('notSurvived');
+    const meterFill = document.getElementById('meterFill');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultNote = document.getElementById('resultNote');
+    const status = document.getElementById('status');
+    const ageInput = document.getElementById('age');
+    const ageError = document.createElement('div');
+
+    ageError.style.color = '#b95b4b';
+    ageError.style.fontSize = '0.82rem';
+    ageError.style.marginTop = '0.45rem';
+    ageError.style.display = 'none';
+    ageInput.parentElement.appendChild(ageError);
+
+    ageInput.addEventListener('input', () => {
+      const age = Number(ageInput.value);
+
+      if (age <= 0 && ageInput.value !== '') {
+        ageInput.style.border = '1px solid #b95b4b';
+        ageInput.style.boxShadow = '0 0 0 3px rgba(185, 91, 75, 0.12)';
+        ageError.textContent = 'Age value must be greater than 0.';
+        ageError.style.display = 'block';
+      } else {
+        ageInput.style.border = '1px solid #dce7e6';
+        ageInput.style.boxShadow = 'none';
+        ageError.textContent = '';
+        ageError.style.display = 'none';
+      }
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const passengerClass = Number(document.getElementById('passengerClass').value);
+      const age = Number(document.getElementById('age').value);
+      const fare = Number(document.getElementById('fare').value);
+
+      if (age <= 0) {
+        resultTitle.textContent = 'Invalid age';
+        resultNote.textContent = 'Age value must be greater than 0. Zero and negative values are not allowed.';
+        status.textContent = 'Invalid input';
+        status.classList.add('danger');
+        survivalProbability.textContent = '0%';
+        notSurvived.textContent = '0%';
+        meterFill.style.width = '0%';
+        return;
+      }
+
+      // A lightweight browser approximation of the Python model's three features.
+      let score = 1.55 - (passengerClass * 0.72) - (age * 0.018) + (Math.log1p(fare) * 0.3);
+      const probability = Math.round((1 / (1 + Math.exp(-score))) * 100);
+      const survived = probability >= 50;
+
+      survivalProbability.textContent = `${probability}%`;
+      notSurvived.textContent = `${100 - probability}%`;
+      meterFill.style.width = `${probability}%`;
+      status.textContent = survived ? 'Likely survived' : 'Higher risk';
+      status.classList.toggle('danger', !survived);
+      resultTitle.textContent = survived ? 'A hopeful crossing' : 'A difficult crossing';
+      resultNote.textContent = survived
+        ? 'This passenger profile has a stronger estimated chance of survival.'
+        : 'This passenger profile has a lower estimated chance of survival.';
+    });
+  </script>
+</body>
+</html>
