@@ -370,3 +370,16 @@ This project is created for **learning and educational purposes**.
 
 The Titanic dataset is a publicly available historical dataset widely used for machine learning education and practice.
 
+<div align="center">
+
+<br/>
+
+<img src="https://media.giphy.com/media/g9582DNuQppxC/giphy.gif" width="350" alt="Thank you character"/>
+
+<br/>
+
+### Thanks for reading — happy learning! 💙
+
+<br/>
+
+</div>
