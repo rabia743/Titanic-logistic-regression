@@ -1,3 +1,15 @@
+<div align="center">
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0b2b44,50:1f4a6b,100:5f9acf&height=200&section=header&text=Titanic%20Survival%20Prediction&fontSize=45&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=A%20Machine%20Learning%20Journey&descAlignY=58&descSize=18" width="100%"/>
+
+<!-- 🌊 Realistic Titanic sailing then sinking animation 🌊 -->
+
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=20&duration=3000&pause=800&color=5F9ACF&center=true&vCenter=true&width=600&lines=From+raw+data+to+survival+predictions...;Cleaning+%E2%86%92+Training+%E2%86%92+Predicting;Logistic+Regression+on+the+Titanic+dataset" alt="Typing SVG" />
+</p>
+
+</div>
+
+---
 # 🚢 Titanic Survival Prediction
 
 A machine learning project that predicts whether a passenger would survive the Titanic disaster using **Logistic Regression**.
